@@ -69,32 +69,33 @@ describe("check image existance", () => {
   });
 });
 
-describe("check image creation", () => {
+describe("check image procesing", () => {
   const img = new Image("test", "300", "300");
 
-  beforeAll(async () => {
-    const image =
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0" +
-      "NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO" +
-      "3gAAAABJRU5ErkJggg==";
-    // strip off the data: url prefix to get just the base64-encoded bytes
-    const data = image.replace(/^data:image\/\w+;base64,/, "");
-    const buf = Buffer.from(data, "base64");
-    await fs.writeFile(`${Image.SOURCE_PATH}/test.jpg`, buf);
-  });
-
-  afterAll(async () => {
-    sharp.cache(false);
-    await fs.unlink(`${Image.SOURCE_PATH}/test.jpg`);
-    await fs.unlink(`${Image.THUMB_PATH}/test_300_300.jpg`);
-    sharp.cache(true);
-  });
-
-  it("should create img with 300 height & width", async () => {
-    await img.resizeImage();
-    const result = sharp(`${Image.THUMB_PATH}/test_300_300.jpg`);
-    const { info } = await result.png().toBuffer({ resolveWithObject: true });
-    expect(info.width).toBe(300);
-    expect(info.height).toBe(300);
+  it("should create new processeed img with 300 height & width", async () => {
+    await createUserFile(); //create file put by user
+    await img.resizeImage(); //call the real function
+    const result = sharp(`${Image.THUMB_PATH}/test_300_300.jpg`); //get the generated file
+    const { info } = await result.png().toBuffer({ resolveWithObject: true }); //extract image info
+    expect(info.width).toBe(300); // check new image width
+    expect(info.height).toBe(300); //check new image height
+    await deleteTestFiles(); // delete files for test
   });
 });
+
+async function createUserFile() {
+  const image =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0" +
+    "NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO" +
+    "3gAAAABJRU5ErkJggg==";
+  const data = image.replace(/^data:image\/\w+;base64,/, "");
+  const buf = Buffer.from(data, "base64");
+  await fs.writeFile(`${Image.SOURCE_PATH}/test.jpg`, buf);
+}
+
+async function deleteTestFiles() {
+  sharp.cache(false);
+  await fs.unlink(`${Image.SOURCE_PATH}/test.jpg`);
+  await fs.unlink(`${Image.THUMB_PATH}/test_300_300.jpg`);
+  sharp.cache(true);
+}
