@@ -72,7 +72,7 @@ describe("check image existance", () => {
 describe("check image procesing", () => {
   const img = new Image("test", "300", "300");
 
-  it("should create new processeed img with 300 height & width", async () => {
+  it("should create newly processed img with 300 height & width", async () => {
     await createUserFile(); //create file put by user
     await img.resizeImage(); //call the real function
     const result = sharp(`${Image.THUMB_PATH}/test_300_300.jpg`); //get the generated file
