@@ -36,7 +36,6 @@ routes.get("/images", async (req: express.Request, res: express.Response) => {
       res.status(500).send("failed to resise image");
     }
   } else {
-    console.log("AICI");
     res.status(200).sendFile(path.resolve(img.getThumbPath()));
   }
 });

@@ -1,5 +1,6 @@
 import sharp from "sharp";
 import { promises as fs } from "fs";
+import { isNumeric } from "../utils/utils";
 
 export class Image {
   static SOURCE_PATH = "./assets/full";
@@ -29,7 +30,7 @@ export class Image {
 
   static checkWidthHeight(x: string): boolean {
     const value = parseInt(x);
-    if (Number.isNaN(value) || value < 0 || value > 5000) {
+    if (!isNumeric(x) || value < 0 || value > 5000) {
       return false;
     }
     return true;
